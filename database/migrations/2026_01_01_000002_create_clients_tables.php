@@ -7,12 +7,12 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        // 1. جدول العملاء
+        
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
             $table->foreignId('organization_id')->constrained('organizations')->cascadeOnDelete();
             $table->uuid('public_id')->unique();
-            $table->string('type', 20)->index(); // company, individual
+            $table->string('type', 20)->index(); 
             $table->string('name')->index();
             $table->string('name_ar')->nullable();
             $table->string('email')->nullable()->index();
@@ -21,19 +21,20 @@ return new class extends Migration {
             $table->string('tax_id')->nullable()->index();
             $table->string('commercial_register')->nullable();
             $table->string('contact_person')->nullable();
-            $table->string('status', 24)->default('active')->index(); // active, deactivated
+            $table->string('status', 24)->default('active')->index(); 
             $table->text('notes')->nullable();
+            $table->text('notes_ar')->nullable();
             $table->json('extra_data')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
             
-            // Indexes لتحسين سرعة البحث
+            
             $table->index(['organization_id', 'status', 'name']);
             $table->index(['organization_id', 'type', 'status']);
         });
 
-        // 2. جدول مستخدمي العملاء (للموبايل أب)
+        
         Schema::create('client_users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('organization_id')->constrained('organizations')->cascadeOnDelete();
@@ -52,8 +53,6 @@ return new class extends Migration {
             $table->timestamp('otp_expires_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
-            // الإيميل فريد جوه الشركة بس
             $table->unique(['email', 'organization_id']);
             $table->index(['organization_id', 'client_id', 'status']);
         });
